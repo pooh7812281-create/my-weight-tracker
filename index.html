@@ -22,21 +22,36 @@ textarea{min-height:70px;resize:vertical}.two{display:grid;grid-template-columns
 section{display:none}section.active{display:block}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.entry{border-top:1px solid var(--line);padding:12px 0;font-size:13px}.entry:first-child{border-top:0}.entry small{color:var(--muted)}
 .pill{border-radius:99px;padding:5px 9px;background:#f8ece8;color:#a86962;font-size:11px}.notice{background:#fff7ed;border-radius:14px;padding:12px;font-size:12px;line-height:1.65;color:#8b674e;margin:12px 0}
 .progress{height:9px;background:#f0e9e4;border-radius:30px;overflow:hidden;margin:12px 0}.progress>div{height:100%;background:var(--green);width:0}.chart{width:100%;height:170px}footer{font-size:11px;color:var(--muted);line-height:1.6;margin:20px 2px}.hidden{display:none!important}
+ .reminder-card{border:1px solid #f1ded7;background:linear-gradient(135deg,#fffaf7,#fff)}
+.reminder-date{font-size:22px;font-weight:750;color:#ae7068;margin:8px 0}
+.reminder-status{display:inline-block;border-radius:999px;background:#f9e8e2;color:#a3655b;padding:7px 11px;font-size:12px}
 </style></head><body>
 <main><header><div><div class="eyebrow">MY WELLNESS JOURNEY</div><h1>我的減重日記 ♡</h1><div class="sub" id="today"></div></div><span style="font-size:32px">🌷</span></header>
 <section id="home" class="active"><div class="metrics"><div class="metric"><span>起始體重</span><strong id="startMetric">—</strong><span>kg</span></div><div class="metric"><span>最新體重</span><strong id="latestMetric">—</strong><span>kg</span></div><div class="metric"><span>累積變化</span><strong id="diffMetric">—</strong><span>kg</span></div></div>
 <div class="card"><div class="row"><h2>目標進度</h2><span class="sub" id="targetLabel">尚未設定</span></div><div class="progress"><div id="progressFill"></div></div><div class="sub" id="progressText">在設定頁輸入起始與目標體重</div></div>
+<div class="card reminder-card"><div class="row"><h2>🌷 下次猛健樂施打提醒</h2><span class="pill" id="reminderTime">每週五 19:00</span></div>
+<div class="reminder-date" id="reminderNext">計算中…</div>
+<div class="sub" id="reminderCountdown"></div>
+<p><span class="reminder-status" id="reminderStatus">依照醫師指示施打</span></p>
+<button class="secondary small" onclick="switchTab('settings')">調整提醒時間</button></div>
 <div class="card"><h2>體重趨勢</h2><svg class="chart" id="chart" viewBox="0 0 330 170" role="img" aria-label="體重變化折線圖"></svg></div>
 <div class="card"><h2>快速記錄</h2><div class="actions"><button onclick="switchTab('weight')">＋ 記錄體重</button><button class="secondary" onclick="switchTab('shots')">＋ 記錄施打</button></div></div><div class="card"><h2>最近紀錄</h2><div id="recent"></div></div></section>
 <section id="weight"><div class="card"><h2>⚖️ 新增體重紀錄</h2><form id="weightForm"><label>日期</label><input type="date" id="wDate" required><div class="two"><div><label>體重（kg）</label><input type="number" step="0.1" min="1" max="400" id="wValue" required></div><div><label>腰圍（cm，選填）</label><input type="number" step="0.1" min="1" id="wWaist"></div></div><label>備註</label><textarea id="wNote" placeholder="今天的心情、飲食或運動…"></textarea><p><button type="submit">儲存體重</button></p></form></div><div class="card"><h2>歷史體重</h2><div id="weightsList"></div></div></section>
 <section id="shots"><div class="card"><h2>💉 新增施打紀錄</h2><form id="shotForm"><label>施打日期</label><input type="date" id="sDate" required><div class="two"><div><label>藥筆標示規格</label><select id="sPen"><option>2.5</option><option>5</option><option>7.5</option><option>10</option><option>12.5</option><option>15</option></select></div><div><label>實際施打劑量（mg）</label><input type="number" id="sDose" step="0.1" min="0.1" max="15" required></div></div><label>施打部位</label><select id="sSite"><option>腹部左側</option><option>腹部右側</option><option>大腿左側</option><option>大腿右側</option><option>上臂左側</option><option>上臂右側</option><option>其他</option></select><label>身體反應（可複選）</label><div id="symptoms" class="actions"></div><label>其他備註</label><textarea id="sNote" placeholder="食慾、感受、醫師指示…"></textarea><div class="notice">此處僅記錄已施打的劑量，不提供藥筆格數換算或分劑量操作。請依醫師處方及藥品說明使用。</div><button type="submit">儲存施打紀錄</button></form></div><div class="card"><h2>施打歷史</h2><div id="shotsList"></div></div></section>
 <section id="pens"><div class="card"><h2>🖊️ 藥筆管理</h2><form id="penForm"><div class="two"><div><label>藥筆規格（mg／完整劑量）</label><select id="pStrength"><option>2.5</option><option>5</option><option>7.5</option><option>10</option><option>12.5</option><option>15</option></select></div><div><label>購買價格（NT$）</label><input type="number" min="0" id="pPrice" placeholder="選填"></div></div><div class="two"><div><label>首次使用日期</label><input type="date" id="pOpen" required></div><div><label>已使用完整劑量次數</label><select id="pUsed"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div></div><label>備註／批號</label><input id="pNote" placeholder="選填"><div class="notice">藥筆使用期限與可使用次數請以妳持有產品的官方說明書及藥師指示為準；本工具不計算分裝或拆分劑量。</div><button type="submit">新增藥筆</button></form></div><div class="card"><h2>我的藥筆</h2><div id="pensList"></div></div><div class="card"><h2>藥費統計</h2><div class="row"><span>已登記購買金額</span><strong id="totalCost">NT$ 0</strong></div></div></section>
 <section id="settings"><div class="card"><h2>🎯 個人目標</h2><form id="settingsForm"><div class="two"><div><label>起始體重（kg）</label><input id="startWeight" type="number" step="0.1" min="1" required></div><div><label>目標體重（kg）</label><input id="goalWeight" type="number" step="0.1" min="1" required></div></div><label>身高（cm，選填）</label><input id="height" type="number" step="0.1" min="1"><p><button type="submit">儲存設定</button></p></form><div id="bmi" class="sub"></div></div>
+<div class="card"><h2>🔔 每週施打提醒</h2><form id="reminderForm">
+<label>固定施打星期</label><select id="reminderDay">
+<option value="1">星期一</option><option value="2">星期二</option><option value="3">星期三</option>
+<option value="4">星期四</option><option value="5">星期五</option><option value="6">星期六</option><option value="0">星期日</option></select>
+<label>提醒時間</label><input id="reminderClock" type="time" required>
+<p><button type="submit">儲存提醒時間</button></p></form>
+<div class="notice">App 內倒數在開啟網頁時更新，不會在背景主動推播。手機通知請使用已設定的 ChatGPT 每週提醒；如果在這裡更改時間，也要同步修改手機通知。</div></div>
 <div class="card"><h2>🔐 資料保存與備份</h2><p class="sub">資料只存在目前使用的瀏覽器裝置中，不會自動上傳雲端。請定期匯出 JSON 備份至 iCloud 雲碟。清除網站資料、無痕模式、換手機或不同瀏覽器都可能造成紀錄遺失。</p><div class="actions"><button onclick="exportData()">⬇ 匯出備份</button><button class="secondary" onclick="document.getElementById('importFile').click()">⬆ 匯入備份</button><input type="file" accept="application/json,.json" id="importFile" class="hidden"></div><p class="sub" id="backupDate"></p></div><div class="card"><h2>管理資料</h2><button class="danger" onclick="eraseAll()">刪除全部紀錄</button></div></section>
 <footer>此工具用於個人追蹤，不提供診斷、劑量建議或格數換算。若出現持續劇烈腹痛、嚴重嘔吐或其他嚴重症狀，請立即就醫。</footer></main>
 <nav class="tabs"><button data-tab="home" class="active" onclick="switchTab('home')"><b>⌂</b>首頁</button><button data-tab="weight" onclick="switchTab('weight')"><b>⚖</b>體重</button><button data-tab="shots" onclick="switchTab('shots')"><b>✚</b>施打</button><button data-tab="pens" onclick="switchTab('pens')"><b>▤</b>藥筆</button><button data-tab="settings" onclick="switchTab('settings')"><b>⚙</b>設定</button></nav>
 <script>
-const KEY='wellness-journal-v1',empty=()=>({settings:{},weights:[],shots:[],pens:[],lastBackup:null});
+const KEY='wellness-journal-v1',empty=()=>({settings:{},weights:[],shots:[],pens:[],lastBackup:null,reminder:{day:5,time:'19:00'}});
 let db;try{db=JSON.parse(localStorage.getItem(KEY))||empty()}catch(e){db=empty()}
 const $=id=>document.getElementById(id),today=new Date().toLocaleDateString('en-CA');
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('無法儲存，請確認瀏覽器允許網站資料儲存。')}render()}
@@ -51,10 +66,34 @@ $('weightForm').onsubmit=e=>{e.preventDefault();db.weights.push({id:id(),date:$(
 $('shotForm').onsubmit=e=>{e.preventDefault();let pen=Number($('sPen').value),dose=Number($('sDose').value);if(dose!==pen&&!confirm('施打劑量與藥筆標示規格不同，請確認已與醫師或藥師核對。仍要如實記錄嗎？'))return;db.shots.push({id:id(),date:$('sDate').value,pen,dose,site:$('sSite').value,symptoms:[...$('symptoms').querySelectorAll('input:checked')].map(x=>x.value),note:$('sNote').value});save();e.target.reset();$('sDate').value=today;alert('施打紀錄已儲存')};
 $('penForm').onsubmit=e=>{e.preventDefault();db.pens.push({id:id(),strength:Number($('pStrength').value),price:Number($('pPrice').value)||0,opened:$('pOpen').value,used:Number($('pUsed').value),note:$('pNote').value});save();e.target.reset();$('pOpen').value=today;alert('藥筆已新增')};
 $('settingsForm').onsubmit=e=>{e.preventDefault();db.settings={start:Number($('startWeight').value),goal:Number($('goalWeight').value),height:Number($('height').value)||null};save();alert('設定已儲存')};
+$('reminderForm').onsubmit=e=>{e.preventDefault();db.reminder={day:Number($('reminderDay').value),time:$('reminderClock').value};save();alert('每週施打提醒時間已儲存')};
+function renderReminder(){
+ const cfg=db.reminder||{day:5,time:'19:00'};
+ const days=['日','一','二','三','四','五','六'];
+ const now=new Date(),next=new Date(now);
+ const [hour,minute]=(cfg.time||'19:00').split(':').map(Number);
+ next.setHours(hour||0,minute||0,0,0);
+ let offset=(Number(cfg.day)-now.getDay()+7)%7;
+ next.setDate(next.getDate()+offset);
+ if(next.getTime()<now.getTime())next.setDate(next.getDate()+7);
+ const remaining=next.getTime()-now.getTime();
+ const totalMinutes=Math.ceil(remaining/60000);
+ const daysLeft=Math.floor(totalMinutes/1440);
+ const hoursLeft=Math.floor((totalMinutes%1440)/60);
+ const minsLeft=totalMinutes%60;
+ const sameDay=now.getDay()===Number(cfg.day);
+ $('reminderTime').textContent='每週'+days[Number(cfg.day)]+' '+cfg.time;
+ $('reminderNext').textContent=next.toLocaleDateString('zh-TW',{month:'long',day:'numeric',weekday:'long'})+' '+cfg.time;
+ $('reminderCountdown').textContent='距離下次提醒還有 '+daysLeft+' 天 '+hoursLeft+' 小時 '+minsLeft+' 分';
+ $('reminderStatus').textContent=sameDay?'今天是預定施打日 💉 請依醫囑確認':'按時記錄施打日期與劑量 ♡';
+ if(document.activeElement!==$('reminderDay'))$('reminderDay').value=String(cfg.day);
+ if(document.activeElement!==$('reminderClock'))$('reminderClock').value=cfg.time;
+}
 function remove(type,key){if(!confirm('確定刪除此筆紀錄？'))return;db[type]=db[type].filter(x=>x.id!==key);save()}
 function editPen(key){let p=db.pens.find(x=>x.id===key);if(!p)return;let val=prompt('已使用幾次完整劑量？請輸入0至4',p.used);if(val===null)return;if(!/^[0-4]$/.test(val.trim()))return alert('請輸入0到4');p.used=Number(val);save()}
 function list(type,items,format){return items.length?items.map(x=>`<div class="entry"><div class="row"><div>${format(x)}</div><button class="danger small" onclick="remove('${type}','${x.id}')">刪除</button></div></div>`).join(''):'<div class="sub">目前還沒有紀錄</div>'}
 function render(){
+ renderReminder();
 let w=[...db.weights].sort((a,b)=>a.date.localeCompare(b.date)),shots=[...db.shots].sort((a,b)=>b.date.localeCompare(a.date)),start=db.settings.start,goal=db.settings.goal,last=w.at(-1)?.kg;
 $('startMetric').textContent=start||'—';$('latestMetric').textContent=last??'—';$('diffMetric').textContent=start&&last!=null?(last-start).toFixed(1):'—';
 $('targetLabel').textContent=goal?`${goal} kg`:'尚未設定';
@@ -74,4 +113,6 @@ function exportData(){db.lastBackup=new Date().toISOString();save();let blob=new
 $('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(data.app!=='my-wellness-journal'||!data.data||!Array.isArray(data.data.weights)||!Array.isArray(data.data.shots)||!Array.isArray(data.data.pens))throw Error('格式不符');if(!confirm('匯入會取代目前所有紀錄，確定嗎？'))return;db=data.data;save();alert('備份已還原')}catch(err){alert('匯入失敗：'+err.message)}finally{e.target.value=''}};
 function eraseAll(){if(confirm('這會永久刪除本機全部紀錄。請先匯出備份。確定繼續？')&&confirm('再次確認：真的要刪除全部資料嗎？')){db=empty();save()}}
 render();
+window.addEventListener('focus',renderReminder);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderReminder()});
 </script></body></html>
